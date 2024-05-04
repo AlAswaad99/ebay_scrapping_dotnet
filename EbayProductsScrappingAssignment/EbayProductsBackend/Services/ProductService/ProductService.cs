@@ -36,6 +36,7 @@ namespace EbayProductsBackend.Services.ProductService
                 Product newProduct = new()
                 {
                     Description = product.Description,
+                    ItemNumber = product.ItemNumber,
                     Title = product.Title,
                     Price = product.Price,
                     VideoUrl = product.VideoUrl,
@@ -137,15 +138,11 @@ namespace EbayProductsBackend.Services.ProductService
                 oldProduct.Description = product.Description;
                 oldProduct.Price = product.Price;
                 oldProduct.VideoUrl = product.VideoUrl;
+                oldProduct.ItemNumber = product.ItemNumber;
 
                 var images = await _imageService.AddOrUpdateListOfImages(product.Images, id);
                 if (images != null) oldProduct.Images = images;
                 // await _context.SaveChangesAsync();
-
-
-
-                // TODO: handle image deletion with image service
-
 
                 await _context.SaveChangesAsync();
 

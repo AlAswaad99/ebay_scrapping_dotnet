@@ -4,6 +4,7 @@ using EbayProductsBackend.Data;
 using EbayProductsBackend.Services.AuthService;
 using EbayProductsBackend.Services.ImagesService;
 using EbayProductsBackend.Services.ProductService;
+using EbayProductsBackend.Services.ScrapperService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,11 +43,13 @@ builder.Services.AddSwaggerGen(
 }
 );
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<DataContext>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IScrapperService, ScrapperService>();
 
 builder.Services.AddAuthentication(options =>
 {

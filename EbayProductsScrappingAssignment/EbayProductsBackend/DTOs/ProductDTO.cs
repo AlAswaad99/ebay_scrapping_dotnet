@@ -11,12 +11,14 @@ namespace EbayProductsBackend.DTOs
         public string Title { get; set; } = string.Empty;
         public string Price { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string ItemNumber { get; set; } = string.Empty;
         public string VideoUrl { get; set; } = string.Empty;
         public List<ImageDTO> Images { get; set; } = [];
 
         public void MapProduct(Product product)
         {
             Description = product.Description;
+            ItemNumber = product.ItemNumber;
             Title = product.Title;
             Images = product.Images.Select(i => new ImageDTO(i.Id, i.Url)).ToList();
             Price = product.Price;
