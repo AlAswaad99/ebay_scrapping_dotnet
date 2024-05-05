@@ -10,7 +10,7 @@ namespace EbayProductsBackend.Services.ProductService
 {
     public interface IProductService
     {
-        Task<ListProductResponseDTO> GetProducts();
+        Task<ListProductResponseDTO> GetProducts(int page, int pageSize);
         Task<SingleProductResponseDTO> GetSingleProduct(Guid id);
         Task<SingleProductResponseDTO> AddProduct(AddProductRequestDTO product);
         Task<SingleProductResponseDTO> UpdateProduct(Guid id, UpdateProductRequestDTO product);

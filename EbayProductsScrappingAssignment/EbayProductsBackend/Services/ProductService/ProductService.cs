@@ -82,11 +82,15 @@ namespace EbayProductsBackend.Services.ProductService
             }
         }
 
-        public async Task<ListProductResponseDTO> GetProducts()
+        public async Task<ListProductResponseDTO> GetProducts(int page, int pageSize)
         {
             try
             {
-                return new ListProductResponseDTO(200, "Successfully Retreived Products", await _context.Products.Include(p => p.Images).ToListAsync());
+                var skip = (page - 1) * pageSize;
+                var products = await _context.Products.Skip(skip).Take(pageSize).Include(p => p.Images).ToListAsync();
+                Debug.Print(products.ToString());
+
+                return new ListProductResponseDTO(200, "Successfully Retreived Products", products);
             }
             catch (System.Exception ex)
             {

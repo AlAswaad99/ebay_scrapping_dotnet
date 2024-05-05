@@ -25,9 +25,9 @@ namespace EbayProductsBackend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListProductResponseDTO>> GetAllProducts()
+        public async Task<ActionResult<ListProductResponseDTO>> GetAllProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var products = await _productService.GetProducts();
+            var products = await _productService.GetProducts(page, pageSize);
 
             if (products.ResponseCode != 200) return BadRequest(products);
             return Ok(products);
