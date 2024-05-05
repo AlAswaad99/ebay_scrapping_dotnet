@@ -14,10 +14,15 @@ namespace EbayProductsBackend.Services.ScrapperService
 
         private readonly HttpClient _httpClient;
 
-        public ScrapperService(HttpClient httpClient)
+        private readonly IConfiguration _configuration;
+
+
+        public ScrapperService(HttpClient httpClient, IConfiguration configuration)
         {
+            _configuration = configuration;
+
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("http://localhost:8080/");
+            _httpClient.BaseAddress = new Uri(_configuration.GetValue<string>("ScrapperBaseUrl"));
         }
 
         public async Task<ScrapeProductListResponseDTO> ScrapeAllProductsDetails()
