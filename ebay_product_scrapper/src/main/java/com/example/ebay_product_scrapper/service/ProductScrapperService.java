@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.example.ebay_product_scrapper.dto.RequestDTO;
@@ -31,6 +33,9 @@ public class ProductScrapperService {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    Environment environment;
+
     public ResponseDTO scrapeProductsList(RequestDTO requestDTO) {
         try {
             String url = validateURL(requestDTO.getUrl());
@@ -38,12 +43,29 @@ public class ProductScrapperService {
             if (url == null || url.isEmpty())
                 return new ResponseDTO(400, "Invalid URL");
 
+            Connection.Response initialResponse = Jsoup.connect(url)
+                    .method(Connection.Method.GET)
+                    .userAgent(
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
+                    .followRedirects(true)
+                    .execute();
+
+            // Retrieve the cookies from the initial response
+            Map<String, String> cookies = initialResponse.cookies();
+
+            // System.out.println(new ObjectMapper().writeValueAsString(cookies));
+
             Document doc = Jsoup.connect(url)
-                    .userAgent("PostmanRuntime/7.38.0")
+                    .method(Connection.Method.GET)
+                    .userAgent(
+                            environment.getProperty("jsoup.user-agent",
+                                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"))
+                    .cookies(cookies) // Attach the cookies to the request
+                    .followRedirects(true)
                     .get();
             Elements ulElements = doc.select("ul[class*=b-list__items_nofooter]");
             List<Product> resultList = new ArrayList<Product>();
-            // String ulText = ulElements.text();
+            // String ulText = doc.text();
 
             // System.out.println("Text"+ ulText);
             if (ulElements != null) {
