@@ -1,38 +1,41 @@
 
 # Project Setup Guide
 
-This guide provides step-by-step instructions on how to set up Docker containers for the MSSQL server, scrapper service, and products service.
+This guide will walk you through running your application using Docker Compose, which will start up your MSSQL Server, scrapper service, and products service.
 
-## MSSQL Server
+### Prerequisites
 
-`docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=${DB_PASSWORD}" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest`
+-   Docker installed on your machine
+-   Docker Compose installed on your machine
 
-Replace `${DB_PASSWORD}` with your desired password.
+### Step 1: Clone the Repository
 
-## Scrapper Service
+Clone your repository to your local machine:
+```
+git clone https://github.com/AlAswaad99/ebay_scrapping_dotnet.git
+cd ebay_scrapping_dotnet
+``` 
 
-1. Navigate to the location of the Dockerfile for the scrapper service i.e. `/ebay_product_scrapper`.
-2. Build the Docker image using the following command:
+### Step 2: Configure Environment Variables
 
-`docker build -t ebay-scrapper-service:latest .`
+Create a `.env.dev` according to the `.env.example` file in the root of the project directory i.e. where `docker-compose.yml`  file exists. Use the same values that are provided in the example file for `MSSQL_SA_USERNAME` and `ASPNETCORE_ENVIRONMENT`
 
-3. Once the image is built, run the scrapper service with the provided command:
+### Step 3: Run The Application
 
-`docker run -d -e DATABASE_URL="jdbc:sqlserver://host.docker.internal:1433;databaseName=${DB_NAME};trustServerCertificate=true" -e DATABASE_USERNAME="sa" -e DATABASE_PASSWORD=${DB_PASSWORD} -p 8081:8081 ebay-scrapper-service:latest`
+Navigate to the root directory of your project and run the following command:
 
-Replace `${DB_PASSWORD}` and `${DB_NAME}` with your actual database password and Database Name.
+`docker-compose --env-file .env.dev up -d` 
 
-## Products Service
+This command will start up the MSSQL Server, scrapper service, and products service using the configuration defined in the `docker-compose.yml` file.
 
-1. Navigate to the location of the Dockerfile for the products service i.e. `/EbayProductsScrappingAssignment/EbayProductsBackend`.
-2. Build the Docker image using the following command:
+### Step 4: Access Your Application
 
-`docker build -t ebay_products_backend .`
+Once your services are up and running, you can access the application (prefferably the swagger API dashboard) using the following endpoints:
 
-3. Once the image is built, run the products service with the provided command:
+-   Products Service: `http://localhost:${PRODUCTS_PORT}/swagger`
+	Replace the `${PRODUCTS_PORT}` with the one you set in the .env
 
-`docker run -d -p 8080:8080 CONNECTIONSTRINGS__DEFAULTCONNECTION="Server=host.docker.internal,1433;Database=${DB_NAME};User=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;" -e JWTSETTINGS__KEY="${JWT_SECRET_KEY}" -e JWTSETTINGS__ISSUER="${JWT_ISSUER}" -e JWTSETTINGS__AUDIENCE="${JWT_AUDIENCE}" -e SCRAPPERBASEURL="http://localhost:8080/" -e ASPNETCORE_ENVIRONMENT="Development" ebay_products_backend`
+### Additional Notes
 
-Replace `${DB_PASSWORD}` and `${DB_NAME}` with your actual database password and Database Name. Also, generate a random 256 bits string and replace `${JWT_SECRET_KEY}` with it. Then replace `${JWT_ISSUER}` and `${JWT_AUDIENCE}` with your JWT Issuer (use `EbayProductsBackend` for dev environment)
-
-Finally, open up browser and navigate to `http://localhost:8080/swagger/index.html` to open Swagger and access the Web API.
+-   The scrapper service and products service containers will wait for the MSSQL Server container to be up and running before starting up. This ensures that the required database is available before attempting to connect.
+----------
