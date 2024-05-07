@@ -1,3 +1,13 @@
+FROM eclipse-temurin:17-jdk-alpine AS builder
+
+WORKDIR /app
+
+# Copy the source code
+COPY . .
+
+# Build the application
+RUN ./mvnw package -DskipTests
+
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
@@ -5,8 +15,6 @@ WORKDIR /app
 EXPOSE 8081
 
 # Add App
-ARG JAR_FILE=target/*.jar
-
-COPY ${JAR_FILE} /app/service.jar
+COPY --from=builder /app/target/*.jar /app/service.jar
 
 ENTRYPOINT ["java","-jar","/app/service.jar"]

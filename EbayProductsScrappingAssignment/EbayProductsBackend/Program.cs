@@ -75,6 +75,24 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+// Database migration logic
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<DataContext>();
+
+    try
+    {
+        dbContext.Database.Migrate();
+        Console.WriteLine("Database migration completed successfully.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"An error occurred while migrating the database: {ex.Message}");
+        throw;
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

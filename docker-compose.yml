@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  mssql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "${MSSQL_PORT}:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+    env_file:
+      - .env.dev
+
+  scrapper-service:
+    build:
+      context: ./ebay_product_scrapper
+    ports:
+      - "${SCRAPPER_PORT}:8081"
+    depends_on:
+      - mssql-server
+    environment:
+      DATABASE_URL: "jdbc:sqlserver://host.docker.internal:${MSSQL_PORT};databaseName=${DB_NAME};trustServerCertificate=true"
+    env_file:
+      - .env.dev
+
+  products-service:
+    build:
+      context: ./EbayProductsScrappingAssignment/EbayProductsBackend
+    ports:
+      - "${PRODUCTS_PORT}:8080"
+    depends_on:
+      - mssql-server
+      - scrapper-service
+    environment:
+      SCRAPPERBASEURL: "http://localhost:${SCRAPPER_PORT}/"
+      CONNECTIONSTRINGS__DEFAULTCONNECTION: "Server=host.docker.internal,${MSSQL_PORT};Database=${DB_NAME};User=${MSSQL_SA_USERNAME};Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;"
+
+    env_file:
+      - .env.dev
