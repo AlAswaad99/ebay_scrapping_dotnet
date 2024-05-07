@@ -10,17 +10,23 @@ services:
     env_file:
       - .env.dev
 
+
   scrapper-service:
     build:
       context: ./ebay_product_scrapper
     ports:
       - "${SCRAPPER_PORT}:8081"
     depends_on:
-      - mssql-server
+      mssql-server:
+        condition: service_started
+      products-service:
+        condition: service_started
+    entrypoint: ["/bin/sh", "-c", "sleep 30 && java -jar /app/service.jar"]
     environment:
       DATABASE_URL: "jdbc:sqlserver://host.docker.internal:${MSSQL_PORT};databaseName=${DB_NAME};trustServerCertificate=true"
     env_file:
       - .env.dev
+
 
   products-service:
     build:
@@ -28,11 +34,12 @@ services:
     ports:
       - "${PRODUCTS_PORT}:8080"
     depends_on:
-      - mssql-server
-      - scrapper-service
+      mssql-server:
+        condition: service_started
+    entrypoint: ["/bin/sh", "-c", "sleep 20 && dotnet EbayProductsBackend.dll"]
     environment:
-      SCRAPPERBASEURL: "http://localhost:${SCRAPPER_PORT}/"
-      CONNECTIONSTRINGS__DEFAULTCONNECTION: "Server=host.docker.internal,${MSSQL_PORT};Database=${DB_NAME};User=${MSSQL_SA_USERNAME};Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;"
-
+      SCRAPPERBASEURL: "http://scrapper-service:${SCRAPPER_PORT}/"
+      CONNECTIONSTRINGS__DEFAULTCONNECTION: "Server=host.docker.internal,${MSSQL_PORT};Database=${DB_NAME};User=${MSSQL_SA_USERNAME};Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;connect timeout=100"
     env_file:
       - .env.dev
+   

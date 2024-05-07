@@ -43,15 +43,15 @@ public class ProductScrapperService {
             if (url == null || url.isEmpty())
                 return new ResponseDTO(400, "Invalid URL");
 
-            Connection.Response initialResponse = Jsoup.connect(url)
-                    .method(Connection.Method.GET)
-                    .userAgent(
-                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
-                    .followRedirects(true)
-                    .execute();
+            // Connection.Response initialResponse = Jsoup.connect(url)
+            //         .method(Connection.Method.GET)
+            //         .userAgent(
+            //                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
+            //         .followRedirects(true)
+            //         .execute();
 
-            // Retrieve the cookies from the initial response
-            Map<String, String> cookies = initialResponse.cookies();
+            // // Retrieve the cookies from the initial response
+            // Map<String, String> cookies = initialResponse.cookies();
 
             // System.out.println(new ObjectMapper().writeValueAsString(cookies));
 
@@ -59,8 +59,8 @@ public class ProductScrapperService {
                     .method(Connection.Method.GET)
                     .userAgent(
                             environment.getProperty("jsoup.user-agent",
-                                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"))
-                    .cookies(cookies) // Attach the cookies to the request
+                                    "PostmanRuntime/7.38.0"))
+                    // .cookies(cookies) // Attach the cookies to the request
                     .followRedirects(true)
                     .get();
             Elements ulElements = doc.select("ul[class*=b-list__items_nofooter]");

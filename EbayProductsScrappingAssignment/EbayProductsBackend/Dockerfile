@@ -15,18 +15,25 @@ RUN dotnet publish -c Release -o out
 # Create a new stage for the runtime environment
 FROM mcr.microsoft.com/dotnet/aspnet:latest AS runtime
 
+# Install wget
+# RUN apt-get update && \
+#     apt-get install -y netcat-openbsd wget
+
 # Set the working directory in the container
 WORKDIR /app
 
 # Copy the published output from the previous stage to the container
 COPY --from=build /app/out .
 
-# RUN dotnet tool install --global dotnet-ef
-
-# RUN dotnet ef database update --context DataContext --startup-project EbayProductsBackend -c EbayProductsBackend -p EbayProductsBackend
-
-# Expose port 8080 for HTTP traffic
 EXPOSE 8080
+
+# Add wait-for-it for docker-compose
+# COPY wait-for-it.sh wait-for-it.sh
+# RUN chmod +x wait-for-it.sh
+# RUN sed -i 's/\r$//' wait-for-it.sh
+
+# # Wait for 30 seconds before running the entrypoint command
+# RUN sleep 30
 
 # Run the application
 ENTRYPOINT ["dotnet", "EbayProductsBackend.dll"]
