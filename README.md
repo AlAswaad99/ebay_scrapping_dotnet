@@ -18,7 +18,7 @@ cd ebay_scrapping_dotnet
 
 ### Step 2: Configure Environment Variables
 
-Create a `.env.dev` according to the `.env.example` file in the root of the project directory i.e. where `docker-compose.yml`  file exists. Use the same values that are provided in the example file for `MSSQL_SA_USERNAME` and `ASPNETCORE_ENVIRONMENT`. Use a 256-bit randomly generated string for the value of `JWTSETTINGS__KEY`.
+Create a `.env.dev` according to the `.env.example` file in the root of the project directory i.e. where `docker-compose.yml` file exists and provide values for each environment variable. Use the same values that are provided in the example file for `MSSQL_SA_USERNAME` and `ASPNETCORE_ENVIRONMENT`. Use a 256-bit randomly generated string for the value of `JWTSETTINGS__KEY`.
 
 ### Step 3: Run The Application
 
